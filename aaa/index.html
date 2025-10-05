@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataway Analytics | Modern Data Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-chart-network"></i>
+            </div>
+            <div class="logo-text">Dataway Analytics</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-database"></i> Data Resources</a></li>
+            <li><a href="#"><i class="fas fa-project-diagram"></i> Models</a></li>
+            <li><a href="#confusionMatrix"><i class="fas fa-chart-bar"></i> Visualization</a></li>
+            <li><a href="#"><i class="fas fa-cogs"></i> Preferences</a></li>
+            <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">Neil Armstrong</div>
+                    <div class="user-role">Data Scientist</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="page-title">
+                <h1>Data Analysis Dashboard</h1>
+                <p>Get real time insights from our future-ready Machine Learning models.</p>
+            </div>
+            <div class="user-actions">
+                <button class="btn btn-outline">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-cloud-upload-alt"></i> Create a Report
+                </button>
+                <button class="btn btn-primary" id="stateSwitcher">
+                    <i class="fas fa-cloud-alt"></i>Hyper-Parameter Tweaking
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="fileCount">0</div>
+                    <div class="stat-label">Uploaded File</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="modelCount">1</div>
+                    <div class="stat-label">Trained Models</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="accuracyRate">94%</div>
+                    <div class="stat-label">Average Accuracy</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="processingTime">0.0s</div>
+                    <div class="stat-label">Process Time</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard">
+            <!-- Data Upload Card -->
+            <div class="card upload-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-file-csv"></i> Data Upload
+                    </div>
+                    <div class="card-actions">
+                        <button class="icon-btn">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Upload Your CSV File</h3>
+                        <p>Drag-Drop Files or Click to Select from Your Computer</p>
+                        <input type="file" id="csvFile" class="file-input" accept=".csv">
+                        <label for="csvFile" class="file-label">Select File</label>
+                        <div id="fileName" class="file-name">No file selected yet</div>
+                    </div>
+                    <button id="runModel" class="btn btn-primary btn-full">
+                        <i class="fas fa-play"></i> Run Model
+                    </button>
+                </div>
+            </div>
+
+            <!-- Model Output Card -->
+            <div class="card output-card" id="predictCard">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-robot"></i> Model Prediction
+                    </div>
+                    <div class="card-actions">
+                        <button class="icon-btn" id="exportResults">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="loading" id="predictionLoading">
+                        <div class="spinner"></div>
+                        <p>Model is running...</p>
+                    </div>
+                    <div id="predictionResults">
+
+                        <div class="table-container">
+                            <table class="prediction-table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th style="text-align: right">Prediction</th>
+                                </tr>
+                                </thead>
+                                <tbody id="predictionTableBody">
+                                <!-- Table data will be dynamically added via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card output-card hidden" id="tuneCard">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-robot"></i> Hyper Parameters
+                    </div>
+                    <div class="card-actions">
+                        <button class="icon-btn" id="exportResults">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="loading" id="predictionLoading">
+                        <div class="spinner"></div>
+                        <p>Model is running...</p>
+                    </div>
+                    <div id="predictionResults">
+                        <div class="prediction-container">
+                            <div class="prediction-card">
+                                <div class="prediction-title">Average Prediction</div>
+                                <div class="prediction-value" id="avgPrediction">-</div>
+                            </div>
+                            <div class="prediction-card">
+                                <div class="prediction-title">Average Accuracy</div>
+                                <div class="prediction-value" id="accuracyRate">-</div>
+                            </div>
+                        </div>
+                        <div class="parameters-table">
+                            <table class="prediction-table">
+                                <thead>
+                                <tr>
+                                    <th>Parameters</th>
+                                    <th style="text-align: right">Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>n_estimators</td>
+                                    <td style="text-align: right">
+                                        <input class="param-input" type="number" id="n_estimators" min="1" step="1" value="100">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>learning_rate</td>
+                                    <td style="text-align: right">
+                                        <input class="param-input" type="number" id="learning_rate" min="0" max="1" step="0.01" value="0.10">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>max_depth</td>
+                                    <td style="text-align: right">
+                                        <input class="param-input" type="number" id="max_depth" min="1" step="1" value="6">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>min_child_weight</td>
+                                    <td style="text-align: right">
+                                        <input class="param-input" type="number" id="min_child_weight" min="0" step="1" value="1">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>subsample</td>
+                                    <td style="text-align: right">
+                                        <input class="param-input" type="number" id="subsample" min="0" max="1" step="0.01" value="1.00">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>colsample_bytree</td>
+                                    <td style="text-align: right">
+                                        <input class="param-input" type="number" id="colsample_bytree" min="0" max="1" step="0.01" value="1.00">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Cards -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-chart-bar"></i> Charts
+                    </div>
+                    <div class="card-actions">
+                        <button class="icon-btn" id="refreshCorr">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="chart-container" id="corrMatrix"></div>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-chart-bar"></i> Charts
+                    </div>
+                    <div class="card-actions">
+                        <button class="icon-btn" id="refreshConfusion">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="chart-container" id="confusionMatrix"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2023 Dataway Analytics. All rights preserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Agreement</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Support</a>
+            </div>
+        </footer>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
